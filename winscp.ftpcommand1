@@ -1,0 +1,5 @@
+option batch on
+open FTPLOGIN
+cd FTPDIR
+pwd
+bye

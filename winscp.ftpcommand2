@@ -1,0 +1,8 @@
+option batch on
+open FTPLOGIN
+cd FTPDIR
+option transfer binary
+put ZIPFILE
+close
+exit
+
