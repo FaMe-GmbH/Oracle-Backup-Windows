@@ -1,4 +1,4 @@
-@echo off
+@echo on
 REM database backup script
 REM parameters:   backup_db.cmd <Instance> [--test]
 REM <Instance> is required
@@ -131,7 +131,7 @@ echo FTP connectivity test successful.
 REM run the export, write to logfile only
 echo ---EXPORT----------------------
 echo export command=^"expdp system/%SYSTEM_PWD4INSTANCE% parfile=backup.par 2>NUL^"
-@echo off
+@echo on
 if "%TESTMODE%"=="1" (
 	echo "Test: creating testfile %DUMPFILE% of 100MB+100kB size"
 	REM Note: CMD preprocesses strings with ! marks, so we have to use ^! here
@@ -147,19 +147,24 @@ if "%TESTMODE%"=="1" (
 ) else (
 	echo "Starting expdp for instance %ORACLE_SID% ..."
 	expdp system/%SYSTEM_PWD4INSTANCE% parfile=backup.par 2>&1
-	set expdp_errorlevel=%ERRORLEVEL%
-
-	if !expdp_errorlevel! EQU 1 (
-		echo expdp terminated with error code 1. Stop.
+	if errorlevel  5 (
+		echo "Oracle export terminated with warnings."
+	) else (
+		if errorlevel 1 (
+			echo "expdp terminated with error code 1 (fatal error). Stop."
+			call %SCRIPT_DIR%\remove_dumpfile.cmd "%DUMPFILE%"
+			popd
+			exit /B 9
+		)
+	)
+	tail -n 5 %DUMPFILE%.log | perl -e "{local $/; my $s=<>; if ($s=~/Job .SYSTEM.* successfully completed/s) {exit 0;} else {exit 1;}}"
+	if errorlevel 1 (
+		echo "String ^"Job .SYSTEM.... successfully completed^" not found in %DUMPFILE%.log"
 		call %SCRIPT_DIR%\remove_dumpfile.cmd "%DUMPFILE%"
 		popd
 		exit /B 9
 	)
-
-	if !expdp_errorlevel! EQU 5 (
-		echo Oracle export terminated with warnings.
-	)
-	echo End of Oracle export
+	echo "End of Oracle export."
 )
 @echo off
 
@@ -178,12 +183,6 @@ if errorlevel 1 (
 )
 
 REM zip and copy:
-echo ---Start of %DUMPFILE%.log----------------
-head -n 10 %DUMPFILE%.log
-echo ---End of %DUMPFILE%.log----------------
-tail -n 10 %DUMPFILE%.log
-echo --------------------------
-echo.
 echo ---ZIP-------------------------
 
 @echo off
