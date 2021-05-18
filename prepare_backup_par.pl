@@ -3,6 +3,7 @@
 # Option --prepare (default):
 # Reads the FAME_BACKUP_DIR directory from the dir.txt file
 # Sets up the backup.par file and the ftp file transfer scripts winscp.ftpcommand1 and winscp.ftpcommand2
+# (winscp.ftpcommand* for Windows only)
 # Print the full path and filename of the DUMPFILE on STDOUT.
 # Requires the option --ftp_login or the ENV variable FTP_LOGIN
 # Requires the option --remote_ftp_dir or the ENV variable REMOTE_FTP_DIR
@@ -50,16 +51,16 @@ GetOptions ("logdate" => \$logdate,
 			"remote_ftp_dir=s" => \$remote_ftp_dir)
   or die("usage: $0 [--logdate|--prepare|--check_ftp_dir|--check_ftp_transfer|--logfile_name|--check_day_of_week [--manual]]");
 
-if (length("$ENV{COMPUTERNAME}") == 0) {
-	die "ENV variable COMPUTERNAME is not defined.";
-}
 
 $ftp_login = ($ftp_login ? $ftp_login : $ENV{FTP_LOGIN});
 $remote_ftp_dir = ($remote_ftp_dir ? $remote_ftp_dir : $ENV{REMOTE_FTP_DIR});
 
 my $t = strftime('%Y%m%d-%H%M', localtime()); 
-my $computername = lc($ENV{COMPUTERNAME});
-
+my $computername = lc($ENV{COMPUTERNAME} ? $ENV{COMPUTERNAME} : $ENV{HOSTNAME});
+if (! $computername) {
+	die "ENV variables HOSTNAMEN and COMPUTERNAME are both not defined.";
+}
+$computername =~ s/(\w+)(\..*)/$1/;
   
 # called to check the FTP remote directory?
 if ($check_ftp_dir) {
@@ -142,7 +143,7 @@ elsif ($check_day_of_week) {
 if (length("$ENV{ORACLE_SID}") == 0) {
 	die "ENV variable ORACLE_SID is not defined.";
 }
-my $file = "backup_$ENV{ORACLE_SID}_$t.dmp";
+my $file = "backup_${computername}_$ENV{ORACLE_SID}_$t.dmp";
 
 # check dir.txt:
 my $directory = "";
@@ -172,11 +173,13 @@ EOF
 ;
 close BACKUP_PAR;
 
-unless ($remote_ftp_dir)	{ die "remote_ftp_dir is not set. Stop."; }
-unless ($ftp_login) 		{ die "ftp_login is not set. Stop."; }
+# WinSCP command files: Windows only.
+if ($^O =~ /mswin32/i) {
+	unless ($remote_ftp_dir)	{ die "remote_ftp_dir is not set. Stop."; }
+	unless ($ftp_login) 		{ die "ftp_login is not set. Stop."; }
 
-open(FTPCOM1, ">winscp.ftpcommand1.$ENV{ORACLE_SID}") || die "cannot write file winscp.ftpcommand1.$ENV{ORACLE_SID}: $!";
-print FTPCOM1 <<EOF
+	open(FTPCOM1, ">winscp.ftpcommand1.$ENV{ORACLE_SID}") || die "cannot write file winscp.ftpcommand1.$ENV{ORACLE_SID}: $!";
+	print FTPCOM1 <<EOF
 option batch on
 open $ftp_login
 cd $remote_ftp_dir
@@ -184,10 +187,10 @@ pwd
 bye
 EOF
 ;
-close FTPCOM1;
+	close FTPCOM1;
 
-open(FTPCOM2, ">winscp.ftpcommand2.$ENV{ORACLE_SID}") || die "cannot write to file winscp.ftpcommand2.$ENV{ORACLE_SID}: $!";
-print FTPCOM2 <<EOF
+	open(FTPCOM2, ">winscp.ftpcommand2.$ENV{ORACLE_SID}") || die "cannot write to file winscp.ftpcommand2.$ENV{ORACLE_SID}: $!";
+	print FTPCOM2 <<EOF
 option batch on
 open $ftp_login
 cd $remote_ftp_dir
@@ -197,7 +200,13 @@ close
 exit
 EOF
 ;
-close FTPCOM2;
+	close FTPCOM2;
+}
 
 # Script output is expected by batch file:
-print "$directory\\$file";
+if ($^O =~ /mswin32/i) {
+	print "$directory\\$file";
+}
+else {
+	print "$directory/$file";
+}

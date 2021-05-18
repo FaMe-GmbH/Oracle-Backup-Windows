@@ -41,12 +41,14 @@ foreach (<CONF>)
 		# backup_all.cmd parameter --manual flags "run all backups now"
 		if ($ENV{MANUAL} == 1) {
 			$backup_instance = 1;
+			print STDERR "MANUAL=1 detected.\n";
 		}
 		# backup_all.cmd parameter --instance <INSTANCE> flags "run this backup now"
 		elsif ($ENV{INSTANCE} eq $instance_name) {
 			$backup_instance = 1;
+			print STDERR "INSTANCE=$ENV{INSTANCE} detected.\n";
 		}
-		elsif (@instance_def) {
+		elsif (! $ENV{INSTANCE} && @instance_def) {
 			my $backup_flags = uc(shift(@instance_def));
 			# print "instance_name=$instance_name  backup_flags=$backup_flags\n";
 			if ($backup_flags =~ /\b(Y|YES)\b/i) {

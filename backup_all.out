@@ -1,0 +1,395 @@
+
+C:\app\oracle\admin\backup-scripts>if not "--manual" == "" (
+if "--manual" == "--test" set TESTMODE=1  
+ if "--manual" == "--manual" set MANUAL=1  
+ if "--manual" == "--instance" (
+set INSTANCE=--test  
+ shift
+)  
+ shift
+) 
+
+C:\app\oracle\admin\backup-scripts>if not "--test" == "" goto read_args 
+
+C:\app\oracle\admin\backup-scripts>if not "--test" == "" (
+if "--test" == "--test" set TESTMODE=1  
+ if "--test" == "--manual" set MANUAL=1  
+ if "--test" == "--instance" (
+set INSTANCE=  
+ shift
+)  
+ shift
+) 
+
+C:\app\oracle\admin\backup-scripts>if not "" == "" goto read_args 
+
+C:\app\oracle\admin\backup-scripts>REM read file backup.conf: returns all instances to back up  
+
+C:\app\oracle\admin\backup-scripts>for /F %d in ('perl read_backup_config.pl') do call backup_db0.cmd %d    2>&1  | tee -a logs\backup.20210510-0031.log 
+
+C:\app\oracle\admin\backup-scripts>call backup_db0.cmd P1000    2>&1  | tee -a logs\backup.20210510-0031.log 
+
+
+--------------------------------------
+next Instance to back up: P1000
+Mon May 10 00:31:55 2021
+SYSTEM_PWD4INSTANCE="password12345"
+ORACLE_SID=P1000
+NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+Oracle Service P1000 is running.
+---EXPORT DIRECTORY-----------
+c:\app\oracle\admin\P1000\backup
+---dir.txt----------------
+c:\app\oracle\admin\P1000\backup
+--------------------------
+batch           on        
+Searching for host...
+Connecting to host...
+Authenticating...
+Using username "dbbackup".
+Authenticating with pre-entered password.
+Authenticated.
+Starting the session...
+Session started.
+Active session: [1] dbbackup@ftpserver02
+/backup/database/dbserver19
+/backup/database/dbserver19
+FTP connectivity test successful.
+---EXPORT----------------------
+export command="expdp system/password12345 parfile=backup.par 
+"Test: creating testfile c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp of 100MB+100kB size"
+"Test: created testfile c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp of 100MB+100kB size"
+"checking export file c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp for timestamp < 12 hours and size >= 100M"
+File check OK - c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp has size=105062400 (minimum = 104857600) and is newer than 12 hours
+export file check OK
+---Start of c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.log----------------
+head: c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.log: No such file or directory
+---End of c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.log----------------
+tail: c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.log: No such file or directory
+--------------------------
+
+---ZIP-------------------------
+using 7Zip to compress the export dump file...
+
+7-Zip 19.00 (x64) : Copyright (c) 1999-2018 Igor Pavlov : 2019-02-21
+
+Scanning the drive:
+1 file, 105062400 bytes (101 MiB)
+
+Creating archive: c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.zip
+
+Add new data to archive: 1 file, 105062400 bytes (101 MiB)
+
+
+Files read from disk: 1
+Archive size: 319355 bytes (312 KiB)
+Everything is Ok
+using 7Zip to add logfiles to the zip archive....
+
+7-Zip 19.00 (x64) : Copyright (c) 1999-2018 Igor Pavlov : 2019-02-21
+
+Open archive: c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.zip
+--
+Path = c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.zip
+Type = zip
+Physical Size = 319355
+
+Scanning the drive:
+
+WARNING: The system cannot find the file specified.
+c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.log
+
+
+WARNING: The system cannot find the file specified.
+ftp1.P1000.log
+
+5 files, 850 bytes (1 KiB)
+
+Updating archive: c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.zip
+
+Keep old data in archive: 1 file, 105062400 bytes (101 MiB)
+Add new data to archive: 5 files, 850 bytes (1 KiB)
+
+
+Files read from disk: 5
+Archive size: 320703 bytes (314 KiB)
+
+Scan WARNINGS for files and folders:
+
+c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.log : The system cannot find the file specified.
+ftp1.P1000.log : The system cannot find the file specified.
+----------------
+Scan WARNINGS: 2
+7Zip ended with warnings adding logfiles to the zip archive, but the export dump file is included into the zip file.
+--FTP---------------------
+Upload zip file onto FTP server:
+batch           on        
+Searching for host...
+Connecting to host...
+Authenticating...
+Using username "dbbackup".
+Authenticating with pre-entered password.
+Authenticated.
+Starting the session...
+Session started.
+Active session: [1] dbbackup@ftpserver02
+/backup/database/dbserver19
+transfer        binary    
+c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp.zip |         313 KB | 5983.4 KB/s | binary | 100%
+Session 'dbbackup@ftpserver02' closed.
+No session.
+FTP transfer log OK.
+FTP transfer successful.
+Backup completed.
+ORACLE_SID=P1000  DUMPFILE=c:\app\oracle\admin\P1000\backup\backup_P1000_20210510-0031.dmp
+--CLEANUP---------------------
+"exitcode=0"
+Total time: 0h 0min 16s
+--------------------------------------
+
+
+C:\app\oracle\admin\backup-scripts>call backup_db0.cmd P1000A    2>&1  | tee -a logs\backup.20210510-0031.log 
+
+
+--------------------------------------
+next Instance to back up: P1000A
+Mon May 10 00:32:11 2021
+SYSTEM_PWD4INSTANCE="password12345"
+ORACLE_SID=P1000A
+NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+Oracle Service P1000A is running.
+---EXPORT DIRECTORY-----------
+c:\app\oracle\admin\P1000\backup
+---dir.txt----------------
+c:\app\oracle\admin\P1000\backup
+--------------------------
+batch           on        
+Searching for host...
+Connecting to host...
+Authenticating...
+Using username "dbbackup".
+Authenticating with pre-entered password.
+Authenticated.
+Starting the session...
+Session started.
+Active session: [1] dbbackup@ftpserver02
+/backup/database/dbserver19
+/backup/database/dbserver19
+FTP connectivity test successful.
+---EXPORT----------------------
+export command="expdp system/password12345 parfile=backup.par 
+"Test: creating testfile c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp of 100MB+100kB size"
+"Test: created testfile c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp of 100MB+100kB size"
+"checking export file c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp for timestamp < 12 hours and size >= 100M"
+File check OK - c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp has size=105062400 (minimum = 104857600) and is newer than 12 hours
+export file check OK
+---Start of c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.log----------------
+head: c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.log: No such file or directory
+---End of c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.log----------------
+tail: c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.log: No such file or directory
+--------------------------
+
+---ZIP-------------------------
+using 7Zip to compress the export dump file...
+
+7-Zip 19.00 (x64) : Copyright (c) 1999-2018 Igor Pavlov : 2019-02-21
+
+Scanning the drive:
+1 file, 105062400 bytes (101 MiB)
+
+Creating archive: c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.zip
+
+Add new data to archive: 1 file, 105062400 bytes (101 MiB)
+
+
+Files read from disk: 1
+Archive size: 319357 bytes (312 KiB)
+Everything is Ok
+using 7Zip to add logfiles to the zip archive....
+
+7-Zip 19.00 (x64) : Copyright (c) 1999-2018 Igor Pavlov : 2019-02-21
+
+Open archive: c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.zip
+--
+Path = c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.zip
+Type = zip
+Physical Size = 319357
+
+Scanning the drive:
+
+WARNING: The system cannot find the file specified.
+c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.log
+
+
+WARNING: The system cannot find the file specified.
+ftp1.P1000A.log
+
+5 files, 853 bytes (1 KiB)
+
+Updating archive: c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.zip
+
+Keep old data in archive: 1 file, 105062400 bytes (101 MiB)
+Add new data to archive: 5 files, 853 bytes (1 KiB)
+
+
+Files read from disk: 5
+Archive size: 320712 bytes (314 KiB)
+
+Scan WARNINGS for files and folders:
+
+c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.log : The system cannot find the file specified.
+ftp1.P1000A.log : The system cannot find the file specified.
+----------------
+Scan WARNINGS: 2
+7Zip ended with warnings adding logfiles to the zip archive, but the export dump file is included into the zip file.
+--FTP---------------------
+Upload zip file onto FTP server:
+batch           on        
+Searching for host...
+Connecting to host...
+Authenticating...
+Using username "dbbackup".
+Authenticating with pre-entered password.
+Authenticated.
+Starting the session...
+Session started.
+Active session: [1] dbbackup@ftpserver02
+/backup/database/dbserver19
+transfer        binary    
+c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp.zip |         313 KB | 4463.9 KB/s | binary | 100%
+Session 'dbbackup@ftpserver02' closed.
+No session.
+FTP transfer log OK.
+FTP transfer successful.
+Backup completed.
+ORACLE_SID=P1000A  DUMPFILE=c:\app\oracle\admin\P1000\backup\backup_P1000A_20210510-0032.dmp
+--CLEANUP---------------------
+"exitcode=0"
+Total time: 0h 0min 15s
+--------------------------------------
+
+
+C:\app\oracle\admin\backup-scripts>call backup_db0.cmd EN1000    2>&1  | tee -a logs\backup.20210510-0031.log 
+
+
+--------------------------------------
+next Instance to back up: EN1000
+Mon May 10 00:32:26 2021
+SYSTEM_PWD4INSTANCE="password12345"
+ORACLE_SID=EN1000
+NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+Oracle Service EN1000 is running.
+---EXPORT DIRECTORY-----------
+D:\ora_backup\EN1000
+---dir.txt----------------
+D:\ora_backup\EN1000
+--------------------------
+batch           on        
+Searching for host...
+Connecting to host...
+Authenticating...
+Using username "dbbackup".
+Authenticating with pre-entered password.
+Authenticated.
+Starting the session...
+Session started.
+Active session: [1] dbbackup@ftpserver02
+/backup/database/dbserver19
+/backup/database/dbserver19
+FTP connectivity test successful.
+---EXPORT----------------------
+export command="expdp system/password12345 parfile=backup.par 
+"Test: creating testfile D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp of 100MB+100kB size"
+"Test: created testfile D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp of 100MB+100kB size"
+"checking export file D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp for timestamp < 12 hours and size >= 100M"
+File check OK - D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp has size=105062400 (minimum = 104857600) and is newer than 12 hours
+export file check OK
+---Start of D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.log----------------
+head: D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.log: No such file or directory
+---End of D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.log----------------
+tail: D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.log: No such file or directory
+--------------------------
+
+---ZIP-------------------------
+using 7Zip to compress the export dump file...
+
+7-Zip 19.00 (x64) : Copyright (c) 1999-2018 Igor Pavlov : 2019-02-21
+
+Scanning the drive:
+1 file, 105062400 bytes (101 MiB)
+
+Creating archive: D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.zip
+
+Add new data to archive: 1 file, 105062400 bytes (101 MiB)
+
+
+Files read from disk: 1
+Archive size: 319357 bytes (312 KiB)
+Everything is Ok
+using 7Zip to add logfiles to the zip archive....
+
+7-Zip 19.00 (x64) : Copyright (c) 1999-2018 Igor Pavlov : 2019-02-21
+
+Open archive: D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.zip
+--
+Path = D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.zip
+Type = zip
+Physical Size = 319357
+
+Scanning the drive:
+
+WARNING: The system cannot find the file specified.
+D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.log
+
+
+WARNING: The system cannot find the file specified.
+ftp1.EN1000.log
+
+5 files, 829 bytes (1 KiB)
+
+Updating archive: D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.zip
+
+Keep old data in archive: 1 file, 105062400 bytes (101 MiB)
+Add new data to archive: 5 files, 829 bytes (1 KiB)
+
+
+Files read from disk: 5
+Archive size: 320691 bytes (314 KiB)
+
+Scan WARNINGS for files and folders:
+
+D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.log : The system cannot find the file specified.
+ftp1.EN1000.log : The system cannot find the file specified.
+----------------
+Scan WARNINGS: 2
+7Zip ended with warnings adding logfiles to the zip archive, but the export dump file is included into the zip file.
+--FTP---------------------
+Upload zip file onto FTP server:
+batch           on        
+Searching for host...
+Connecting to host...
+Authenticating...
+Using username "dbbackup".
+Authenticating with pre-entered password.
+Authenticated.
+Starting the session...
+Session started.
+Active session: [1] dbbackup@ftpserver02
+/backup/database/dbserver19
+transfer        binary    
+D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp.zip |         313 KB | 9071.2 KB/s | binary | 100% 
+Session 'dbbackup@ftpserver02' closed.
+No session.
+FTP transfer log OK.
+FTP transfer successful.
+Backup completed.
+ORACLE_SID=EN1000  DUMPFILE=D:\ora_backup\EN1000\backup_EN1000_20210510-0032.dmp
+--CLEANUP---------------------
+"exitcode=0"
+Total time: 0h 0min 14s
+--------------------------------------
+
+
+C:\app\oracle\admin\backup-scripts>REM delete all old backup logs 
+
+C:\app\oracle\admin\backup-scripts>forfiles /P logs /M *.* /D -30 /c "cmd /c echo removing ^"@file"   1>>logs\backup.20210510-0031.log  && del @file " 1>>logs\backup.20210510-0031.log 2>&1 
