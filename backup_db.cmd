@@ -62,7 +62,6 @@ for /f "tokens=1" %%d in ('call find_system_pwd.cmd') do set SYSTEM_PWD4INSTANCE
 
 REM get default SYSTEM password if not set in backup.conf:
 if not defined SYSTEM_PWD4INSTANCE set SYSTEM_PWD4INSTANCE=%SYSTEM_PASSWORD%
-if not defined SYSTEM_PWD4INSTANCE set SYSTEM_PWD4INSTANCE=fame12c
 
 if "%TESTMODE%"=="1" echo SYSTEM_PWD4INSTANCE="%SYSTEM_PWD4INSTANCE%"
 
